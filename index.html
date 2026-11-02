@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="论文书架">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>论文书架</title>
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./app.css">
+  <script defer src="./vendor/fflate.js"></script>
+  <script defer src="./lookup.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div id="app">
+    <section id="library-view" class="view">
+      <header class="app-header">
+        <a class="brand" href="#library" aria-label="论文书架首页"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4.5c4-1.5 7-.5 9 1.5 2-2 5-3 9-1.5v15c-4-1.5-7-.5-9 1.5-2-2-5-3-9-1.5zM12 6v15"/></svg><span>论文书架</span></a>
+        <button id="import-top" class="primary compact" type="button"><span aria-hidden="true">＋</span> 导入论文</button>
+      </header>
+      <main class="library-main">
+        <section id="books-panel">
+          <div class="section-heading"><div><h1>我的论文</h1><p id="library-caption">把论文带在身边，安心读下去。</p></div><span class="local-label"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM8.5 12l2.5 2.5 4.5-5"/></svg>仅本机</span></div>
+          <label class="search-box" id="search-box" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="搜索论文标题" autocomplete="off" aria-label="搜索论文标题"></label>
+          <div id="book-list" class="book-list" aria-live="polite"></div>
+          <div id="empty-library" class="empty-state">
+            <svg class="empty-book" aria-hidden="true" viewBox="0 0 100 84"><path d="M12 16c15-5 27-2 38 6 11-8 23-11 38-6v53c-15-5-27-2-38 6-11-8-23-11-38-6zM50 22v53M23 29c7-1 13 1 19 4M23 39c7-1 13 1 19 4M23 49c7-1 13 1 19 4M58 33c6-3 12-5 19-4M58 43c6-3 12-5 19-4"/></svg>
+            <h2>从第一篇论文开始</h2>
+            <p>导入已处理好的论文 ZIP 包。<br>翻译、术语和原版页面，一起带进书架。</p>
+            <button id="import-empty" class="primary" type="button">选择论文 ZIP</button>
+            <p class="privacy-caption">论文与阅读记录只保存在这台设备。</p>
+          </div>
+          <p id="no-results" class="empty-message" hidden>没有找到这篇论文，试试其他关键词。</p>
+        </section>
+        <section id="notes-panel" hidden><h1>我的标注</h1><p class="section-intro">把读到的想法留在这里。</p><div id="all-notes"></div></section>
+        <section id="settings-panel" hidden>
+          <h1>设置</h1>
+          <section class="settings-section"><h2>这是一只本地书架</h2><p>论文、标题、阅读进度、高亮和批注保存在当前设备的网页存储中。阅读器不上传这些内容，不接入统计、广告、在线翻译或模型服务。</p><p>网站代码公开。托管平台在访问网站时可能按其政策记录 IP 等请求信息；这不包含你导入的论文和批注。</p></section>
+          <section class="settings-section"><h2>先添加到主屏幕，再导入</h2><p>在 Safari 中打开网站，点“分享”→“添加到主屏幕”。之后从桌面图标进入，再导入论文，保持阅读记录在同一个入口中。</p></section>
+          <section class="settings-section"><h2>备份你的阅读记录</h2><p>清理网站数据、移除网页 App、更换设备或存储空间不足，都可能导致本地内容丢失。请定期导出完整备份；恢复时重新导入这个 ZIP。</p><div class="settings-actions"><button id="backup-all" class="primary" type="button">导出完整备份</button><button id="restore-backup" type="button">导入备份</button></div><p id="backup-status" class="muted">尚未在此设备导出备份。</p></section>
+          <section class="settings-section"><h2>设备存储</h2><p id="storage-status">正在检查本地存储…</p><button id="request-persistence" type="button">申请持久保存</button><p class="muted">是否授予由系统决定。持久保存不能代替备份。</p></section>
+          <section class="settings-section"><h2>离线阅读</h2><p id="offline-status">阅读器会在首次联网打开时准备离线文件。导入的论文保存在本机，准备完成后可断网阅读。</p><button id="check-update" type="button">检查阅读器更新</button></section>
+          <section class="settings-section"><h2>管理数据</h2><p>删除只影响当前设备。完整备份文件含有论文和批注，请自行妥善保存。</p><button id="delete-all" class="danger" type="button">清空本机书架</button></section>
+          <p class="version">论文书架 · 1.0.0</p>
+        </section>
+      </main>
+      <nav class="bottom-nav" aria-label="主导航">
+        <button type="button" data-tab="books" aria-current="page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4l5-1 3 16-5 1z"/></svg>书架</button>
+        <button type="button" data-tab="notes"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 16 11-11 3 3L8 19l-4 1zM14 7l3 3M4 5v5M4 5h5"/></svg>标注</button>
+        <button type="button" data-tab="settings"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></svg>设置</button>
+      </nav>
+    </section>
+    <section id="reader-view" class="view" hidden>
+      <header class="reader-header"><button id="back-library" class="icon-button" type="button" aria-label="返回书架"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button><div class="reader-heading"><strong id="reader-title"></strong><span id="reader-save-status">保存在本机</span></div><button id="reader-options" class="icon-button" type="button" aria-label="阅读选项"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14"/></svg></button></header>
+      <div id="reader-controls" class="reader-controls" hidden><label>缩放 <select id="zoom"><option value="fit">适合宽度</option><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label><label><input id="show-terms" type="checkbox" checked> 术语标注</label><button id="open-original" type="button">原 PDF</button><button id="backup-paper" type="button">备份本篇</button><button id="show-paper-notes" type="button">查看标注</button></div>
+      <div id="reader-scroll" tabindex="0" aria-label="论文阅读区域"><main id="pages" class="show-terms"></main></div>
+      <footer class="reader-footer"><button id="previous-page" class="icon-button" type="button" aria-label="上一页"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button><label>第 <input id="page-number" type="number" min="1" inputmode="numeric" aria-label="页码"> <span id="page-count"></span> 页</label><button id="next-page" class="icon-button" type="button" aria-label="下一页"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button><button id="selection-mode" class="selection-mode" type="button" aria-pressed="false">点选查译</button></footer>
+      <div id="selection-tools" class="selection-tools" role="toolbar" aria-label="选中文字的操作" hidden><button id="translate-selection" type="button">翻译</button><button type="button" data-color="yellow" class="swatch yellow" aria-label="黄色高亮"></button><button type="button" data-color="blue" class="swatch blue" aria-label="蓝色高亮"></button><button type="button" data-color="green" class="swatch green" aria-label="绿色高亮"></button><button type="button" data-color="red" class="swatch red" aria-label="红色高亮"></button><button type="button" data-color="clear">原色</button><button id="add-note" type="button">批注</button><button id="clear-selection" class="icon-button" type="button" aria-label="结束选择">×</button></div>
+    </section>
+  </div>
+  <input id="import-input" type="file" accept=".zip,application/zip,application/x-zip-compressed" multiple hidden>
+  <dialog id="content-dialog" class="content-dialog" aria-labelledby="dialog-title"><header><h2 id="dialog-title"></h2><button id="close-dialog" class="icon-button" type="button" aria-label="关闭">×</button></header><div id="dialog-body"></div></dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="settings-actions"><button id="confirm-cancel" type="button">取消</button><button id="confirm-accept" class="danger" type="button">确认删除</button></div></dialog>
+  <div id="import-progress" class="import-progress" role="status" hidden><strong id="import-message">正在导入…</strong><span>请保持页面打开，文件只在本机处理。</span><progress aria-label="导入进度"></progress></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript>请启用 JavaScript，以导入论文和使用本地阅读器。</noscript>
+</body>
+</html>

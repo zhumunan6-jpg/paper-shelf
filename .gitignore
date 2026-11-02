@@ -1,0 +1,9 @@
+private/
+test-results/
+*.zip
+*.pdf
+*.log
+.env*
+node_modules/
+__pycache__/
+.DS_Store
